@@ -6,71 +6,92 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Main content container
           Container(
-            margin: EdgeInsets.fromLTRB(20, 250, 20, 0),
+            margin: const EdgeInsets.fromLTRB(20, 220, 20, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Login",
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 60,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 62, 122, 76),
+                  ),
                 ),
                 Text(
                   "Welcome to the CI data entry.",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.normal,
-                    color: Colors.black38,
+                    color: const Color.fromARGB(148, 29, 62, 37),
                   ),
                 ),
-                SizedBox(height: 50),
+                const SizedBox(height: 30),
                 TextField(
                   decoration: InputDecoration(
                     labelText: "Enter your P/no:",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
+                    labelStyle: TextStyle(color: Color.fromARGB(68, 8, 67, 22)),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    prefixIcon: const Icon(Icons.person),
+                    prefixIconColor: const Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 TextField(
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    labelStyle: TextStyle(color: Color.fromARGB(68, 8, 67, 22)),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    prefixIcon: const Icon(Icons.lock),
+                    prefixIconColor: const Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
-                SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      backgroundColor: Colors.blue,
-                    ),
-                    child: Text(
-                      "Login",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
-
-          // Half-circle at the bottom
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              height: 250, // Adjust height as needed
+              height: 325,
               decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(150), // Controls the curve
+                color: const Color.fromARGB(255, 62, 122, 76),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(150),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 230,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 80,
+                    vertical: 15,
+                  ),
+                  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                ),
+                child: const Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color.fromARGB(255, 62, 122, 76),
+                  ),
                 ),
               ),
             ),
