@@ -1,7 +1,54 @@
+import 'package:ci_entry/API/login_api.dart';
+import 'package:ci_entry/UI/homepage.dart';
 import 'package:flutter/material.dart';
+import './login.dart';
 
-class LoginPage extends StatelessWidget {
+
+
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final LoginApi api = LoginApi();
+
+  Future<void> loginUser() async {
+    String username = usernameController.text;
+    String password = passwordController.text;
+
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Username and password cannot be empty.")),
+      );
+      return;
+    }
+
+    Map<String, dynamic> response = await api.loginUser(username, password);
+    if (!mounted) return;
+
+    
+    if (response.containsKey("error")) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response["error"])),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login Successful!")),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(username: username),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,45 +61,43 @@ class LoginPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Login",
                   style: TextStyle(
                     fontSize: 60,
                     fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 62, 122, 76),
+                    color: Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
-                Text(
+                const Text(
                   "Welcome to the CI data entry.",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.normal,
-                    color: const Color.fromARGB(148, 29, 62, 37),
+                    color: Color.fromARGB(148, 29, 62, 37),
                   ),
                 ),
                 const SizedBox(height: 30),
                 TextField(
-                  decoration: InputDecoration(
+                  controller: usernameController,
+                  decoration: const InputDecoration(
                     labelText: "Enter your P/no:",
-                    labelStyle: TextStyle(color: Color.fromARGB(68, 8, 67, 22)),
-                    border: const OutlineInputBorder(
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
-                    prefixIcon: const Icon(Icons.person),
-                    prefixIconColor: const Color.fromARGB(255, 62, 122, 76),
+                    prefixIcon: Icon(Icons.person),
                   ),
                 ),
                 const SizedBox(height: 30),
                 TextField(
+                  controller: passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Password",
-                    labelStyle: TextStyle(color: Color.fromARGB(68, 8, 67, 22)),
-                    border: const OutlineInputBorder(
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
-                    prefixIcon: const Icon(Icons.lock),
-                    prefixIconColor: const Color.fromARGB(255, 62, 122, 76),
+                    prefixIcon: Icon(Icons.lock),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -64,11 +109,9 @@ class LoginPage extends StatelessWidget {
             child: Container(
               width: double.infinity,
               height: 325,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 62, 122, 76),
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(150),
-                ),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 62, 122, 76),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(150)),
               ),
             ),
           ),
@@ -78,13 +121,13 @@ class LoginPage extends StatelessWidget {
             bottom: 230,
             child: Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: loginUser, 
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 80,
                     vertical: 15,
                   ),
-                  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                  backgroundColor: Colors.white,
                 ),
                 child: const Text(
                   "Login",
