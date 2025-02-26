@@ -1,5 +1,5 @@
 import 'package:ci_entry/API/login_api.dart';
-import 'package:ci_entry/UI/homepage.dart';
+import 'package:ci_entry/UI/entryforms.dart';
 import 'package:flutter/material.dart';
 import './login.dart';
 
@@ -44,7 +44,7 @@ class LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(username: username),
+          builder: (context) => BusEntryForm(),
         ),
       );
     }

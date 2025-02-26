@@ -1,3 +1,4 @@
+import 'package:ci_entry/UI/entryforms.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http;

@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://soorya:soorya41080@localho
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, cors_allowed_origins="*")  # Allow connections from your Flutter app
+socketio = SocketIO(app, cors_allowed_origins="*")  
 
 # -------------------------
 # Database Models
@@ -19,8 +19,8 @@ class User(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.Date, nullable=False)  # Using DOB as the password
-
+    password = db.Column(db.Date, nullable=False)  
+    
 class DataEntry(db.Model):
     __tablename__ = 'data_entries'
     id = db.Column(db.Integer, primary_key=True)
@@ -98,7 +98,7 @@ def add_data_entry():
         'after_checking_time': new_entry.after_checking_time.strftime('%H:%M'),
         'case_details': new_entry.case_details,
         'created_at': new_entry.created_at.strftime('%Y-%m-%d %H:%M:%S')
-    }, broadcast=True)
+    })
 
     return jsonify({'message': 'Data entry added successfully'}), 201
 
