@@ -4,6 +4,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'UI/login.dart';
+import 'UI/splash.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Bus Management',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginPage(),
+      home: const SplashScreen(),
     );
   }
 }

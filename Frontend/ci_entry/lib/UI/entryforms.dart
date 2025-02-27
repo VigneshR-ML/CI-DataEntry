@@ -1,9 +1,11 @@
+import 'package:ci_entry/API/place_suggest.dart';
 import 'package:flutter/material.dart';
 import 'package:ci_entry/API/data_handling.dart';
 import 'package:ci_entry/API/validator.dart';
 
 class BusEntryForm extends StatefulWidget {
-  const BusEntryForm({super.key});
+  final int userId;
+  const BusEntryForm({super.key, required this.userId});
 
   @override
   State<BusEntryForm> createState() => _BusEntryFormState();
@@ -11,25 +13,29 @@ class BusEntryForm extends StatefulWidget {
 
 class _BusEntryFormState extends State<BusEntryForm> {
   final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _userIdController = TextEditingController();
+  
   final TextEditingController _busNoController = TextEditingController();
   final TextEditingController _arrivalTimeController = TextEditingController();
   final TextEditingController _arrivalPlaceController = TextEditingController();
-  final TextEditingController _departurePlaceController = TextEditingController();
-  final TextEditingController _checkingPlaceController = TextEditingController();
+  final TextEditingController _departurePlaceController =
+      TextEditingController();
+  final TextEditingController _checkingPlaceController =
+      TextEditingController();
   final TextEditingController _checkingTimeController = TextEditingController();
-  final TextEditingController _totalPassengersController = TextEditingController();
-  final TextEditingController _freePassengersController = TextEditingController();
-  final TextEditingController _afterCheckingPlaceController = TextEditingController();
-  final TextEditingController _afterCheckingTimeController = TextEditingController();
+  final TextEditingController _totalPassengersController =
+      TextEditingController();
+  final TextEditingController _freePassengersController =
+      TextEditingController();
+  final TextEditingController _afterCheckingPlaceController =
+      TextEditingController();
+  final TextEditingController _afterCheckingTimeController =
+      TextEditingController();
   final TextEditingController _caseDetailsController = TextEditingController();
 
   bool _isSubmitting = false;
 
   @override
   void dispose() {
-    _userIdController.dispose();
     _busNoController.dispose();
     _arrivalTimeController.dispose();
     _arrivalPlaceController.dispose();
@@ -46,13 +52,12 @@ class _BusEntryFormState extends State<BusEntryForm> {
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() {
       _isSubmitting = true;
     });
 
     Map<String, dynamic> data = {
-      "user_id": int.parse(_userIdController.text),
+      "user_id": widget.userId,
       "bus_no": int.parse(_busNoController.text),
       "arrival_time": _arrivalTimeController.text,
       "arrival_place": _arrivalPlaceController.text,
@@ -69,19 +74,46 @@ class _BusEntryFormState extends State<BusEntryForm> {
     try {
       final result = await DataHandling.submitData(data);
       if (result['success']) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'])),
+        showDialog(
+          barrierColor: Color.fromARGB(255, 237, 255, 241),
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Success'),
+              content: const Text('Data Entered Successfully'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _busNoController.clear();
+                    _arrivalTimeController.clear();
+                    _arrivalPlaceController.clear();
+                    _departurePlaceController.clear();
+                    _checkingPlaceController.clear();
+                    _checkingTimeController.clear();
+                    _totalPassengersController.clear();
+                    _freePassengersController.clear();
+                    _afterCheckingPlaceController.clear();
+                    _afterCheckingTimeController.clear();
+                    _caseDetailsController.clear();
+                  },
+                  child: const Text('OK', style: TextStyle(
+                    color: Color.fromARGB(255, 62, 122, 76)
+                  ),),
+                ),
+              ],
+            );
+          },
         );
-        _formKey.currentState!.reset();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: ${result['message']}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed: ${result['message']}')));
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error occurred: $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error occurred: $error')));
     } finally {
       setState(() {
         _isSubmitting = false;
@@ -89,26 +121,45 @@ class _BusEntryFormState extends State<BusEntryForm> {
     }
   }
 
-  /// Helper function to format TimeOfDay into HH:mm (24-hour format)
   String formatTimeOfDay24(TimeOfDay time) {
     final String hour = time.hour.toString().padLeft(2, '0');
     final String minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
 
-  // Function to show a time picker and update the controller with a 24-hour formatted time.
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: const Color.fromARGB(
+                255,
+                62,
+                122,
+                76,
+              ), 
+              onPrimary: Colors.white, 
+              onSurface: Colors.black,
+            ),
+            timePickerTheme: TimePickerThemeData(
+              dialHandColor: const Color.fromARGB(255, 62, 122, 76),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-
     if (picked != null) {
       controller.text = formatTimeOfDay24(picked);
     }
   }
 
-  // Text field builder that accepts a flag for time fields.
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -123,13 +174,27 @@ class _BusEntryFormState extends State<BusEntryForm> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
+          floatingLabelStyle: const TextStyle(
+            color: Color.fromARGB(255, 62, 122, 76),
+          ),
           border: OutlineInputBorder(
-            borderSide: BorderSide(color: const Color.fromARGB(255, 62, 122, 76)),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 62, 122, 76),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 62, 122, 76),
+            ),
           ),
           contentPadding: const EdgeInsets.all(12.0),
-          suffixIcon: isTimeField
-              ? Icon(Icons.access_time, color: const Color.fromARGB(255, 62, 122, 76))
-              : null,
+          suffixIcon:
+              isTimeField
+                  ? const Icon(
+                    Icons.access_time,
+                    color: Color.fromARGB(255, 62, 122, 76),
+                  )
+                  : null,
         ),
         keyboardType: keyboardType,
         maxLines: maxLines,
@@ -143,107 +208,164 @@ class _BusEntryFormState extends State<BusEntryForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Aesthetic using provided color
       appBar: AppBar(
-        title: const Text('Bus Management Entry'),
-        centerTitle: true,
+        title: const Text(
+          'Bus Management Entry',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 62, 122, 76),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          // Responsive layout: constrain width for larger screens
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTextField(
-                    controller: _userIdController,
-                    label: 'User ID',
-                    keyboardType: TextInputType.number,
-                    validator: (value) => Validator.validateInteger(value, 'User ID'),
+                  Row(
+                    children: [
+                      const Text(
+                        'User ID: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        widget.userId.toString(),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
                   _buildTextField(
                     controller: _busNoController,
                     label: 'Bus Number',
                     keyboardType: TextInputType.number,
-                    validator: (value) => Validator.validateInteger(value, 'Bus Number'),
+                    validator:
+                        (value) =>
+                            Validator.validateInteger(value, 'Bus Number'),
                   ),
                   _buildTextField(
                     controller: _arrivalTimeController,
                     label: 'Arrival Time (HH:mm)',
                     keyboardType: TextInputType.datetime,
-                    validator: (value) => Validator.validateTime(value, 'Arrival Time'),
+                    validator:
+                        (value) =>
+                            Validator.validateTime(value, 'Arrival Time'),
                     isTimeField: true,
                   ),
+                  PlaceSuggestionField(controller: _arrivalPlaceController),
                   _buildTextField(
                     controller: _arrivalPlaceController,
                     label: 'Arrival Place',
-                    validator: (value) => Validator.validateNotEmpty(value, 'Arrival Place'),
+                    validator:
+                        (value) =>
+                            Validator.validateNotEmpty(value, 'Arrival Place'),
                   ),
                   _buildTextField(
                     controller: _departurePlaceController,
                     label: 'Departure Place',
-                    validator: (value) => Validator.validateNotEmpty(value, 'Departure Place'),
+                    validator:
+                        (value) => Validator.validateNotEmpty(
+                          value,
+                          'Departure Place',
+                        ),
                   ),
                   _buildTextField(
                     controller: _checkingPlaceController,
                     label: 'Checking Place',
-                    validator: (value) => Validator.validateNotEmpty(value, 'Checking Place'),
+                    validator:
+                        (value) =>
+                            Validator.validateNotEmpty(value, 'Checking Place'),
                   ),
                   _buildTextField(
                     controller: _checkingTimeController,
                     label: 'Checking Time (HH:mm)',
                     keyboardType: TextInputType.datetime,
-                    validator: (value) => Validator.validateTime(value, 'Checking Time'),
+                    validator:
+                        (value) =>
+                            Validator.validateTime(value, 'Checking Time'),
                     isTimeField: true,
                   ),
                   _buildTextField(
                     controller: _totalPassengersController,
                     label: 'Total Passengers',
                     keyboardType: TextInputType.number,
-                    validator: (value) => Validator.validateInteger(value, 'Total Passengers'),
+                    validator:
+                        (value) => Validator.validateInteger(
+                          value,
+                          'Total Passengers',
+                        ),
                   ),
                   _buildTextField(
                     controller: _freePassengersController,
                     label: 'Free Passengers',
                     keyboardType: TextInputType.number,
-                    validator: (value) => Validator.validateInteger(value, 'Free Passengers'),
+                    validator:
+                        (value) =>
+                            Validator.validateInteger(value, 'Free Passengers'),
                   ),
                   _buildTextField(
                     controller: _afterCheckingPlaceController,
                     label: 'After Checking Place',
-                    validator: (value) => Validator.validateNotEmpty(value, 'After Checking Place'),
+                    validator:
+                        (value) => Validator.validateNotEmpty(
+                          value,
+                          'After Checking Place',
+                        ),
                   ),
                   _buildTextField(
                     controller: _afterCheckingTimeController,
                     label: 'After Checking Time (HH:mm)',
                     keyboardType: TextInputType.datetime,
-                    validator: (value) => Validator.validateTime(value, 'After Checking Time'),
+                    validator:
+                        (value) => Validator.validateTime(
+                          value,
+                          'After Checking Time',
+                        ),
                     isTimeField: true,
                   ),
                   _buildTextField(
                     controller: _caseDetailsController,
                     label: 'Case Details',
                     maxLines: 3,
-                    validator: (value) => Validator.validateNotEmpty(value, 'Case Details'),
+                    validator:
+                        (value) =>
+                            Validator.validateNotEmpty(value, 'Case Details'),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 62, 122, 76),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 62, 122, 76),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 3,
                       ),
-                      elevation: 3,
+                      child:
+                          _isSubmitting
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                              : const Text(
+                                'Submit',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
                     ),
-                    child: _isSubmitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Submit', style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),

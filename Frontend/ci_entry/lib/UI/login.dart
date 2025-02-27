@@ -3,8 +3,6 @@ import 'package:ci_entry/UI/entryforms.dart';
 import 'package:flutter/material.dart';
 import './login.dart';
 
-
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -31,21 +29,18 @@ class LoginPageState extends State<LoginPage> {
     Map<String, dynamic> response = await api.loginUser(username, password);
     if (!mounted) return;
 
-    
     if (response.containsKey("error")) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response["error"])),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response["error"])));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login Successful!")),
-      );
-
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Login Successful!")));
+      int userId = response["user_id"];
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => BusEntryForm(),
-        ),
+        MaterialPageRoute(builder: (context) => BusEntryForm(userId: userId)),
       );
     }
   }
@@ -82,10 +77,22 @@ class LoginPageState extends State<LoginPage> {
                   controller: usernameController,
                   decoration: const InputDecoration(
                     labelText: "Enter your P/no:",
+                    floatingLabelStyle: TextStyle(
+                      color: Color.fromARGB(255, 62, 122, 76),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 62, 122, 76),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color:  Color.fromARGB(255, 62, 122, 76),
+                      ),
                     ),
                     prefixIcon: Icon(Icons.person),
+                    prefixIconColor: Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -94,10 +101,19 @@ class LoginPageState extends State<LoginPage> {
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: "Password",
+                    floatingLabelStyle: TextStyle(
+                      color: Color.fromARGB(255, 62, 122, 76),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color:  Color.fromARGB(255, 62, 122, 76),
+                      ),
+                    ),
                     prefixIcon: Icon(Icons.lock),
+                    prefixIconColor: Color.fromARGB(255, 62, 122, 76)
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -121,7 +137,7 @@ class LoginPageState extends State<LoginPage> {
             bottom: 230,
             child: Center(
               child: ElevatedButton(
-                onPressed: loginUser, 
+                onPressed: loginUser,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 80,

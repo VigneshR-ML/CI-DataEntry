@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import random,os
+import csv,os
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -102,6 +103,25 @@ def add_data_entry():
 
     return jsonify({'message': 'Data entry added successfully'}), 201
 
+
+places = []
+csv_file = 'Backend/places.csv'
+with open(csv_file, newline='', encoding='utf-8') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        row['PLCODE'] = row['PLCODE'].strip()
+        row['PLACE1'] = row['PLACE1'].strip()
+        places.append(row)
+
+@app.route('/places')
+def get_places():
+    query = request.args.get('query', '').strip()
+    if not query:
+        return jsonify([])
+
+    suggestions = [row['PLACE1'] for row in places if row['PLCODE'].startswith(query)]
+    return jsonify(suggestions)
+
 # -------------------------
 # SocketIO Events
 # -------------------------
@@ -113,6 +133,7 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')
+
 
 # -------------------------
 # Create DB Tables and Run Server
