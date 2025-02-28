@@ -2,6 +2,8 @@ import 'package:ci_entry/API/place_suggest.dart';
 import 'package:flutter/material.dart';
 import 'package:ci_entry/API/data_handling.dart';
 import 'package:ci_entry/API/validator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ci_entry/UI/login.dart';
 
 class BusEntryForm extends StatefulWidget {
   final int userId;
@@ -13,7 +15,7 @@ class BusEntryForm extends StatefulWidget {
 
 class _BusEntryFormState extends State<BusEntryForm> {
   final _formKey = GlobalKey<FormState>();
-  
+
   final TextEditingController _busNoController = TextEditingController();
   final TextEditingController _arrivalTimeController = TextEditingController();
   final TextEditingController _arrivalPlaceController = TextEditingController();
@@ -75,7 +77,7 @@ class _BusEntryFormState extends State<BusEntryForm> {
       final result = await DataHandling.submitData(data);
       if (result['success']) {
         showDialog(
-          barrierColor: Color.fromARGB(255, 237, 255, 241),
+          barrierColor: const Color.fromARGB(255, 237, 255, 241),
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -85,6 +87,7 @@ class _BusEntryFormState extends State<BusEntryForm> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    // Clear all text fields.
                     _busNoController.clear();
                     _arrivalTimeController.clear();
                     _arrivalPlaceController.clear();
@@ -97,9 +100,10 @@ class _BusEntryFormState extends State<BusEntryForm> {
                     _afterCheckingTimeController.clear();
                     _caseDetailsController.clear();
                   },
-                  child: const Text('OK', style: TextStyle(
-                    color: Color.fromARGB(255, 62, 122, 76)
-                  ),),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Color.fromARGB(255, 62, 122, 76)),
+                  ),
                 ),
               ],
             );
@@ -138,13 +142,8 @@ class _BusEntryFormState extends State<BusEntryForm> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: const Color.fromARGB(
-                255,
-                62,
-                122,
-                76,
-              ), 
-              onPrimary: Colors.white, 
+              primary: const Color.fromARGB(255, 62, 122, 76),
+              onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
             timePickerTheme: TimePickerThemeData(
@@ -205,6 +204,18 @@ class _BusEntryFormState extends State<BusEntryForm> {
     );
   }
 
+  Future<void> _logout() async {
+    // Clear login info (token and userId) from SharedPreferences.
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('userId');
+    // Navigate back to the login page.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -215,6 +226,20 @@ class _BusEntryFormState extends State<BusEntryForm> {
         ),
         centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 62, 122, 76),
+        actions: [
+          PopupMenuButton<int>(
+            icon: const Icon(Icons.person),
+            onSelected: (value) {
+              if (value == 0) {
+                _logout();
+              }
+            },
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(value: 0, child: Text('Logout')),
+                ],
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -259,29 +284,28 @@ class _BusEntryFormState extends State<BusEntryForm> {
                             Validator.validateTime(value, 'Arrival Time'),
                     isTimeField: true,
                   ),
-                  PlaceSuggestionField(controller: _arrivalPlaceController),
-                  _buildTextField(
+                  PlaceSuggestionField(
                     controller: _arrivalPlaceController,
-                    label: 'Arrival Place',
+                    label: "Arrival Place",
                     validator:
                         (value) =>
-                            Validator.validateNotEmpty(value, 'Arrival Place'),
+                            Validator.validateNotEmpty(value, "Arrival Place"),
                   ),
-                  _buildTextField(
+                  PlaceSuggestionField(
                     controller: _departurePlaceController,
-                    label: 'Departure Place',
+                    label: "Departure Place",
                     validator:
                         (value) => Validator.validateNotEmpty(
                           value,
-                          'Departure Place',
+                          "Departure Place",
                         ),
                   ),
-                  _buildTextField(
+                  PlaceSuggestionField(
                     controller: _checkingPlaceController,
-                    label: 'Checking Place',
+                    label: "Checking Place",
                     validator:
                         (value) =>
-                            Validator.validateNotEmpty(value, 'Checking Place'),
+                            Validator.validateNotEmpty(value, "Checking Place"),
                   ),
                   _buildTextField(
                     controller: _checkingTimeController,
@@ -310,13 +334,13 @@ class _BusEntryFormState extends State<BusEntryForm> {
                         (value) =>
                             Validator.validateInteger(value, 'Free Passengers'),
                   ),
-                  _buildTextField(
+                  PlaceSuggestionField(
                     controller: _afterCheckingPlaceController,
-                    label: 'After Checking Place',
+                    label: "After checking Place",
                     validator:
                         (value) => Validator.validateNotEmpty(
                           value,
-                          'After Checking Place',
+                          "After checking Place",
                         ),
                   ),
                   _buildTextField(

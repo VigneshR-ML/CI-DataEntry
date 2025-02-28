@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class DataHandling {
   static Future<Map<String, dynamic>> submitData(Map<String, dynamic> data) async {
-    final url = Uri.parse('http://10.0.2.2:5000/data-entry'); 
+    final url = Uri.parse('http://172.20.10.7:5000/data-entry'); 
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},

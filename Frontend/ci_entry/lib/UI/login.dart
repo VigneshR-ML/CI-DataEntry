@@ -47,76 +47,77 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(20, 220, 20, 0),
+            margin: EdgeInsets.fromLTRB(20, size.height * 0.25, 20, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Login",
                   style: TextStyle(
-                    fontSize: 60,
+                    fontSize: size.width * 0.15,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 62, 122, 76),
+                    color: const Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
-                const Text(
+                Text(
                   "Welcome to the CI data entry.",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: size.width * 0.06,
                     fontWeight: FontWeight.normal,
-                    color: Color.fromARGB(148, 29, 62, 37),
+                    color: const Color.fromARGB(148, 29, 62, 37),
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: size.height * 0.04),
                 TextField(
                   controller: usernameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: "Enter your P/no:",
-                    floatingLabelStyle: TextStyle(
+                    floatingLabelStyle: const TextStyle(
                       color: Color.fromARGB(255, 62, 122, 76),
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      borderSide: BorderSide(
+                        color: const Color.fromARGB(255, 62, 122, 76),
+                      ),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Color.fromARGB(255, 62, 122, 76),
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color:  Color.fromARGB(255, 62, 122, 76),
-                      ),
-                    ),
-                    prefixIcon: Icon(Icons.person),
-                    prefixIconColor: Color.fromARGB(255, 62, 122, 76),
+                    prefixIcon: const Icon(Icons.person),
+                    prefixIconColor: const Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: size.height * 0.04),
                 TextField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: "Password",
-                    floatingLabelStyle: TextStyle(
+                    floatingLabelStyle: const TextStyle(
                       color: Color.fromARGB(255, 62, 122, 76),
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                     ),
-                    focusedBorder: OutlineInputBorder(
+                    focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(
-                        color:  Color.fromARGB(255, 62, 122, 76),
+                        color: Color.fromARGB(255, 62, 122, 76),
                       ),
                     ),
-                    prefixIcon: Icon(Icons.lock),
-                    prefixIconColor: Color.fromARGB(255, 62, 122, 76)
+                    prefixIcon: const Icon(Icons.lock),
+                    prefixIconColor: const Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: size.height * 0.04),
               ],
             ),
           ),
@@ -124,7 +125,7 @@ class LoginPageState extends State<LoginPage> {
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              height: 325,
+              height: size.height * 0.35,
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 62, 122, 76),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(150)),
@@ -134,22 +135,22 @@ class LoginPageState extends State<LoginPage> {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 230,
+            bottom: size.height * 0.2,
             child: Center(
               child: ElevatedButton(
                 onPressed: loginUser,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 80,
-                    vertical: 15,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: size.width * 0.2,
+                    vertical: size.height * 0.02,
                   ),
                   backgroundColor: Colors.white,
                 ),
-                child: const Text(
+                child: Text(
                   "Login",
                   style: TextStyle(
-                    fontSize: 18,
-                    color: Color.fromARGB(255, 62, 122, 76),
+                    fontSize: size.width * 0.045,
+                    color: const Color.fromARGB(255, 62, 122, 76),
                   ),
                 ),
               ),
